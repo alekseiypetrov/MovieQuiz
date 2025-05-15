@@ -19,10 +19,11 @@ final class MovieQuizViewController: UIViewController {
         let buttonText: String
     }
     
-    // MARK: - Lifecycle
     @IBOutlet private weak var textLabel: UILabel!
     @IBOutlet private weak var imageView: UIImageView!
     @IBOutlet private weak var counterLabel: UILabel!
+    @IBOutlet weak var noButton: UIButton!
+    @IBOutlet weak var yesButton: UIButton!
     
     private var currentQuestionIndex = 0
     private var correctAnswers = 0
@@ -75,7 +76,6 @@ final class MovieQuizViewController: UIViewController {
     }
     
     private func show(quiz step: QuizStepViewModel) {
-        // при появлении следующего вопроса исчезает рамка
         imageView.layer.borderWidth = 0
         
         imageView.image = step.image
@@ -108,7 +108,6 @@ final class MovieQuizViewController: UIViewController {
         
         imageView.layer.masksToBounds = true
         imageView.layer.borderWidth = 8
-//        imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
         switch isCorrect {
         case true:
             imageView.layer.borderColor = UIColor.ypGreen.cgColor
@@ -137,34 +136,26 @@ final class MovieQuizViewController: UIViewController {
             let viewModel = self.convert(model: nextQuestion)
             self.show(quiz: viewModel)
         }
+        buttonToggleSwitch(to: true)
+    }
+    
+    private func buttonToggleSwitch(to flag: Bool) {
+        yesButton.isEnabled = flag
+        noButton.isEnabled = flag
     }
     
     @IBAction private func noButtonClicked(_ sender: Any) {
+        buttonToggleSwitch(to: false)
         let givenAnswer = false
         let currentQuestion = questions[currentQuestionIndex]
-        
-//        if givenAnswer == currentQuestion.correctAnswer {
-//            self.correctAnswers += 1
-//        }
-        
         self.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-//            self.showNextQuestionOrResults()
-//        }
     }
     
     @IBAction private func yesButtonClicked(_ sender: Any) {
+        buttonToggleSwitch(to: false)
         let givenAnswer = true
         let currentQuestion = questions[currentQuestionIndex]
-        
-//        if givenAnswer == currentQuestion.correctAnswer {
-//            self.correctAnswers += 1
-//        }
-        
         self.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
-//        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-//            self.showNextQuestionOrResults()
-//        }
     }
 }
 
