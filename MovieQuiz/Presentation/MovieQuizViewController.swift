@@ -75,12 +75,15 @@ final class MovieQuizViewController: UIViewController {
     }
     
     private func show(quiz step: QuizStepViewModel) {
+        // при появлении следующего вопроса исчезает рамка
+        imageView.layer.borderWidth = 0
+        
         imageView.image = step.image
         textLabel.text = step.question
         counterLabel.text = step.questionNumber
     }
     
-    private func show (quiz result: QuizResultsViewModel) {
+    private func show(quiz result: QuizResultsViewModel) {
         let alert = UIAlertController(
             title: result.title,
             message: result.text,
