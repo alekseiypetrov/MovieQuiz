@@ -20,7 +20,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        statisticService = StatisticService()
+        statisticService = StatisticServiceImplementation()
         
         let alertPresenter = AlertPresenter()
         alertPresenter.delegate = self

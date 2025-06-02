@@ -1,7 +1,7 @@
 import Foundation
 
 
-final class StatisticService: StatisticServiceProtocol {
+class StatisticService: StatisticServiceProtocol {
     private enum Keys: String {
         case correct
         case bestGameCorrect
@@ -66,6 +66,12 @@ final class StatisticService: StatisticServiceProtocol {
         self.correctAnswers += currentGame.correct
         self.totalAnswers += currentGame.total
         self.gamesCount += 1
+    }
+}
+
+final class StatisticServiceImplementation: StatisticService {
+    override func store(currentGame: GameResult) {
+        super.store(currentGame: currentGame)
         if currentGame.isBetterThan(self.bestGame) {
             self.bestGame = currentGame
         }
