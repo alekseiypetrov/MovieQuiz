@@ -51,9 +51,9 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     // MARK: - AlertPresenterDelegate
     
     func didAlertPresent() {
-        self.correctAnswers = 0
-        self.currentQuestionIndex = 0
-        self.questionFactory?.requestNextQuestion()
+        correctAnswers = 0
+        currentQuestionIndex = 0
+        questionFactory?.requestNextQuestion()
     }
     
     // MARK: - Private functions
@@ -79,13 +79,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
                                message: result.text,
                                buttonText: result.buttonText,
                                completion: nil)
-        
-        self.alertPresenter?.requestAlert(on: self, model: model)
+        alertPresenter?.requestAlert(on: self, model: model)
     }
     
     private func showAnswerResult(isCorrect: Bool) {
         if isCorrect {
-            self.correctAnswers += 1
+            correctAnswers += 1
         }
         
         imageView.layer.masksToBounds = true
@@ -120,12 +119,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
 Средняя точность: \(String(format: "%.2f", statisticService.totalAccuracy))%
 """,
                 buttonText: "Сыграть еще раз")
-            self.show(quiz: result)
+            show(quiz: result)
         }
         else {
-            self.currentQuestionIndex += 1
-            
-            self.questionFactory?.requestNextQuestion()
+            currentQuestionIndex += 1
+            questionFactory?.requestNextQuestion()
         }
         buttonToggleSwitch(to: true)
     }
@@ -143,7 +141,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         guard let currentQuestion = currentQuestion else {
             return
         }
-        self.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
     
     @IBAction private func yesButtonClicked(_ sender: Any) {
@@ -152,6 +150,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         guard let currentQuestion = currentQuestion else {
             return
         }
-        self.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
 }
