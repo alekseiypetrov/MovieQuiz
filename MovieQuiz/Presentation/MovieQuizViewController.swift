@@ -26,12 +26,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         let alertPresenter = AlertPresenter()
         alertPresenter.delegate = self
         self.alertPresenter = alertPresenter
-        
-        let questionFactory = QuestionFactory()
-        questionFactory.delegate = self
-        self.questionFactory = questionFactory
-        
-        self.questionFactory?.requestNextQuestion()
+
+        questionFactory = QuestionFactory(moviesLoader: MoviesLoader(),
+                                              delegate: self)
+        showLoadingIndicator()
+        questionFactory?.loadData()
     }
     
     // MARK: - QuestionFactoryDelegate
@@ -49,12 +48,27 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         }
     }
     
+    func didLoadDataFromServer() {
+        hideLoadingIndicator()
+        questionFactory?.requestNextQuestion()
+    }
+    
+    func didFailToLoadData(with error: Error) {
+        showNetworkError(message: error.localizedDescription)
+    }
+    
     // MARK: - AlertPresenterDelegate
     
-    func didAlertPresent() {
+    func didAlertPresent(reason: ReasonForAlert) {
         correctAnswers = 0
         currentQuestionIndex = 0
-        questionFactory?.requestNextQuestion()
+        switch reason {
+        case .endGame:
+            questionFactory?.requestNextQuestion()
+        case .errorWithData:
+            showLoadingIndicator()
+            questionFactory?.loadData()
+        }
     }
     
     // MARK: - Private functions
@@ -72,18 +86,17 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
     private func showNetworkError(message: String) {
         hideLoadingIndicator()
         let model = AlertModel(title: "Ошибка",
-                               message: "Невозможно загрузить данные",
+                               message: message,
                                buttonText: "Попробовать еще раз",
                                completion: nil)
         alertPresenter?.requestAlert(on: self, model: model)
     }
     
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
-        let questionStep = QuizStepViewModel(
-            image: UIImage(named: model.image) ?? UIImage(),
+        return QuizStepViewModel(
+            image: UIImage(data: model.image) ?? UIImage(),
             question: model.text,
             questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)")
-        return questionStep
     }
     
     private func show(quiz step: QuizStepViewModel) {
