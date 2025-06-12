@@ -105,6 +105,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
         imageView.image = step.image
         textLabel.text = step.question
         counterLabel.text = step.questionNumber
+        hideLoadingIndicator()
     }
     
     private func show(quiz result: QuizResultsViewModel) {
@@ -129,6 +130,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate, 
             imageView.layer.borderColor = UIColor.ypRed.cgColor
         }
         
+        self.showLoadingIndicator()
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
             guard let self = self else { return }
             self.showNextQuestionOrResults()
