@@ -6,11 +6,10 @@ final class MovieQuizViewController: UIViewController, AlertPresenterDelegate {
     @IBOutlet private weak var counterLabel: UILabel!
     @IBOutlet private weak var noButton: UIButton!
     @IBOutlet private weak var yesButton: UIButton!
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
     
     private var presenter: MovieQuizPresenter!
-    private var alertPresenter: AlertPresenterProtocol?
-    private var statisticService: StatisticServiceProtocol!
+    private var alertPresenter: AlertPresenterProtocol!
     
     // MARK: - Lifecycle
     
@@ -18,12 +17,7 @@ final class MovieQuizViewController: UIViewController, AlertPresenterDelegate {
         super.viewDidLoad()
         
         presenter = MovieQuizPresenter(viewController: self)
-        
-        statisticService = StatisticServiceImplementation()
-        
-        let alertPresenter = AlertPresenter()
-        alertPresenter.delegate = self
-        self.alertPresenter = alertPresenter
+        alertPresenter = AlertPresenter(delegate: self)
     }
     
     // MARK: - AlertPresenterDelegate
@@ -33,7 +27,7 @@ final class MovieQuizViewController: UIViewController, AlertPresenterDelegate {
         presenter.restartGame(dueTo: reason)
     }
     
-    // MARK: - Private functions
+    // MARK: - Updating UI
     
     func showLoadingIndicator() {
         activityIndicator.isHidden = false
@@ -45,6 +39,27 @@ final class MovieQuizViewController: UIViewController, AlertPresenterDelegate {
         activityIndicator.isHidden = true
     }
     
+    func highlightImageBorder(isCorrectAnswer: Bool) {
+        imageView.layer.masksToBounds = true
+        imageView.layer.borderWidth = 8
+        imageView.layer.borderColor = isCorrectAnswer ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor
+    }
+    
+    func buttonToggleSwitch(to flag: Bool) {
+        yesButton.isEnabled = flag
+        noButton.isEnabled = flag
+    }
+    
+    func show(quiz step: QuizStepViewModel) {
+        imageView.layer.borderWidth = 0
+        imageView.image = step.image
+        textLabel.text = step.question
+        counterLabel.text = step.questionNumber
+        hideLoadingIndicator()
+    }
+    
+    // MARK: - Showing Alerts
+    
     func showNetworkError(message: String) {
         hideLoadingIndicator()
         let model = AlertModel(title: "Ошибка",
@@ -54,15 +69,6 @@ final class MovieQuizViewController: UIViewController, AlertPresenterDelegate {
         alertPresenter?.requestAlert(on: self, model: model)
     }
     
-    func show(quiz step: QuizStepViewModel) {
-        imageView.layer.borderWidth = 0
-        
-        imageView.image = step.image
-        textLabel.text = step.question
-        counterLabel.text = step.questionNumber
-        hideLoadingIndicator()
-    }
-    
     func show(quiz result: QuizResultsViewModel) {
         let model = AlertModel(title: result.title,
                                message: result.text,
@@ -70,33 +76,7 @@ final class MovieQuizViewController: UIViewController, AlertPresenterDelegate {
                                completion: nil)
         alertPresenter?.requestAlert(on: self, model: model)
     }
-    
-    func showAnswerResult(isCorrect: Bool) {
-        presenter.didAnswer(isCorrectAnswer: isCorrect)
-        
-        imageView.layer.masksToBounds = true
-        imageView.layer.borderWidth = 8
-        switch isCorrect {
-        case true:
-            imageView.layer.borderColor = UIColor.ypGreen.cgColor
-        case false:
-            imageView.layer.borderColor = UIColor.ypRed.cgColor
-        }
-        
-        self.showLoadingIndicator()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
-            guard let self = self else { return }
-            self.presenter.statisticService = self.statisticService
-            self.presenter.showNextQuestionOrResults()
-            buttonToggleSwitch(to: true)
-        }
-    }
-    
-    private func buttonToggleSwitch(to flag: Bool) {
-        yesButton.isEnabled = flag
-        noButton.isEnabled = flag
-    }
-    
+
     // MARK: - Actions
     
     @IBAction private func noButtonClicked(_ sender: Any) {
