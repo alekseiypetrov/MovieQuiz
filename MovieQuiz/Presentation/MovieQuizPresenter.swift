@@ -6,18 +6,17 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     private var correctAnswers = 0
     private var currentQuestion: QuizQuestion?
     
-    private var statisticService: StatisticServiceProtocol!
+    private var statisticService: StatisticServiceProtocol
     private var questionFactory: QuestionFactoryProtocol?
-    private weak var viewController: MovieQuizViewControllerProtocol? //MovieQuizViewController?
+    private weak var viewController: MovieQuizViewControllerProtocol?
     
     init(viewController: MovieQuizViewControllerProtocol) {
         self.viewController = viewController
+        statisticService = StatisticServiceImplementation()
         
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         questionFactory?.loadData()
         viewController.showLoadingIndicator()
-        
-        statisticService = StatisticServiceImplementation()
     }
     
     // MARK: - QuestionFactoryDelegate
@@ -47,7 +46,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
     
     // MARK: - Updating numerical properties
     
-    func isLastQuestion() -> Bool {
+    private func isLastQuestion() -> Bool {
         currentQuestionIndex == questionsAmount - 1
     }
     
@@ -62,7 +61,7 @@ final class MovieQuizPresenter: QuestionFactoryDelegate {
         }
     }
     
-    func switchToNextQuestion() {
+    private func switchToNextQuestion() {
         currentQuestionIndex += 1
     }
     

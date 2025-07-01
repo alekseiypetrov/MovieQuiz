@@ -59,7 +59,7 @@ final class MovieQuizUITests: XCTestCase {
         
         let noButton = app.buttons["No"]
         let yesButton = app.buttons["Yes"]
-        for i in 0..<5 {
+        for _ in 0..<5 {
             noButton.tap()
             sleep(5)
             yesButton.tap()
@@ -77,7 +77,7 @@ final class MovieQuizUITests: XCTestCase {
         
         let noButton = app.buttons["No"]
         let yesButton = app.buttons["Yes"]
-        for i in 0..<5 {
+        for _ in 0..<5 {
             noButton.tap()
             sleep(5)
             yesButton.tap()
